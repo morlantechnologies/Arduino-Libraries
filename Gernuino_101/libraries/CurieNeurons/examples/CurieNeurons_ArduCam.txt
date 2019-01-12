@@ -1,0 +1,51 @@
+CurieNeurons_ArduCam_Demo
+
+-	Set of 2 scripts with identical runtime (see “How to use” below)
+-	Demo_1Feat.ino:
+	neurons are trained using a single feature (pixel subsampling)
+-	Demo_3Feat.ino:
+	neurons are trained on three different features (pixel subsampling, RGB histogram, Composite profile). This script illustrates how easy it can be to teach multiple networks at once, learning different features extracted from the same objects and making a robust decision requiring a minimum of agreements between the networks
+	
+How to use
+==========
+Specifications:
+-	Display video frame and the region of interest being monitored on the LCD
+-	Recognize continuously the region of interest
+
+When shutter button is depressed
+	if less than 2 seconds ==> learn category 1 and increment its number optionally
+	if more than 2 seconds ==> learn category 0 or background to correct erroneous classification
+	Optionally for debug purposes, save to SD card the following:
+		extracted feature vectors and their taught category (appended in a same vectors.txt file)
+		image (filename includes the taught category)
+		knowledge file
+	Be patient and make sure that the SD_LED is no longer blinking to continue
+	The ArduCam_Console (windows based) allows to open and review the three datatypes saved to the SD Card
+	
+Hints:
+	The proper detection of the shutter being depressed is confirmed as soon as the region of interest freezes on the LCD screen
+	If it is pressed too long, the example is taught as category 0 and the mention “forget” appears at the bottom of the screen.
+	If the option to save is not commented, the vector will be appended to the vectors.txt file, but the number of neurons in the knowledge.dat file will not change (their influence fields might)
+	
+Careful:
+	The category to learn is incremented at each press of the shutter. This which limits the use cases and means that you have only one chance to teach an object of a new category.
+
+How to improve the speed
+========================
+	Migrate the code executing the readout of the pixels from a FIFO and the feature extraction to the FPGA of the ArduCam Shield. Even better, bypass the use of the FIFO and generate the feature vectors on the FPGA as the video comes in
+	Use another ArduCam board and manage the display with another hardware
+
+How to improve the UI
+=====================
+	Variety of user inputs (BlueTooth, Push button, etc)
+	Ability to select a category value at the time of teaching
+	Display of category labels instead of numbers
+	Ability to move the ROI with arrow cursors if the device if mounted on fixed fixture
+	Automatically load a knowledge during setup if a file “default.knf” is found on SDcard
+	
+Possible use cases
+==================
+	Monitor a cat door to ensure a raccoon is not sneaking in
+	Monitor if a flame is present or not
+	Inspect color parts (candies?)
+	If Arduino shield with motors, learn a target centered in FOV and use neurons to control the motors so the camera always points at the target
